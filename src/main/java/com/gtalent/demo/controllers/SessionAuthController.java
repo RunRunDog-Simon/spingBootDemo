@@ -33,9 +33,15 @@ public class SessionAuthController {
             System.out.println("使用者名稱已存在");
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+        if (request.getUsername() == null || request.getUsername().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
             System.out.println("信箱已被使用");
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        if (request.getEmail() == null || request.getEmail().isBlank()) {
+            return ResponseEntity.badRequest().build();
         }
         if (!request.getEmail().contains("@")){
             System.out.println("信箱內容不符合格式，請使用@寫出正確信箱名稱");
@@ -51,7 +57,7 @@ public class SessionAuthController {
         }
         if (!request.getPassword().matches(".*[A-Z].*")){
             System.out.println("密碼請包涵至少一個大寫");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         User user = new User();
         user.setUsername(request.getUsername().trim());

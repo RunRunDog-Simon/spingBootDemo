@@ -65,7 +65,7 @@ public class SessionAuthController {
         user.setPwd(request.getPassword().trim());
         User savedUser = userRepository.save(user);
         session.setAttribute("userId" , user.getId());
-        //此處代表登入後，直接保留登入狀態，不用重新登入
+        //此處代表登入後，直接保留登入狀態，不用重新登入。
         return ResponseEntity.ok(user);
     }
 

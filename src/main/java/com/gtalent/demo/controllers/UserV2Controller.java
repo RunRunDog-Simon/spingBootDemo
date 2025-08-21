@@ -89,6 +89,7 @@ public class UserV2Controller {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
+        user.setRole(request.getRole());
         User savedUser = userRepository.save(user);
         GetUserResponse response = new GetUserResponse(savedUser);
         return ResponseEntity.ok(response);

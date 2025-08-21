@@ -3,14 +3,11 @@ package com.gtalent.demo.responses;
 public class CreateSupplierRequest {
     private int id;
     private String name;
+    private String address;
     private String phone;
     private String email;
 
-    public CreateSupplierRequest(int id ,String name, String phone, String email) {
-        this.id = id;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
+    public CreateSupplierRequest() {
     }
 
     public int getId() {
@@ -43,5 +40,13 @@ public class CreateSupplierRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

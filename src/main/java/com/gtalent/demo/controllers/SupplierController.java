@@ -68,6 +68,7 @@ public class SupplierController {
         Supplier supplier = new Supplier();
         supplier.setName(request.getName());
         supplier.setPhone(request.getPhone());
+        supplier.setAddress(request.getAddress());
         supplier.setEmail(request.getEmail());
         System.out.println("Before Save:" + supplier);
         Supplier savedSupplier = supplierRepository.save(supplier);

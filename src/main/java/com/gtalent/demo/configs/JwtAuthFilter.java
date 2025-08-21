@@ -3,6 +3,7 @@ package com.gtalent.demo.configs;
 import com.gtalent.demo.model.User;
 import com.gtalent.demo.repositories.UserRepository;
 import com.gtalent.demo.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,22 +52,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         // 若開頭格式(Bearer...)正確，則擷取第七字源開始的字串(實際jwt)
         String jwtToken = authHeader.substring(7);
-        String username = jwtService.getUsernameFromToken(jwtToken);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            //db裡面找到對應的username
-            Optional<User> user = userRepository.findByUsername(username);
-            //todo 驗證token是否過期或無效
-            if (user.isPresent()) {
-                //*** 若使用Spring Security (library)必須包含 授權 (Authorization)邏輯->「該用戶能做什麼？」***
-                List<? extends GrantedAuthority> authorities = getUserAuthorities();
-                //該token並非jwt token，而是spring Security內部使用的token(包含user & authorities)
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.get(), null, authorities);
-                //將 Spring Security內部使用的token 投進 Spring Security的 "認證箱"(SecurityContextHolder)
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        try {
+            String username = jwtService.getUsernameFromToken(jwtToken);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                //db裡面找到對應的username
+                Optional<User> user = userRepository.findByUsername(username);
+                //todo 驗證token是否過期或無效
+                if (user.isPresent()) {
+                    //*** 若使用Spring Security (library)必須包含 授權 (Authorization)邏輯->「該用戶能做什麼？」***
+//                    List<? extends GrantedAuthority> authorities = getUserAuthorities();
+                    List<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.get().getRole()));
+                    //該token並非jwt token，而是spring Security內部使用的token(包含user & authorities)
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.get(), null, authorities);
+                    //將 Spring Security內部使用的token 投進 Spring Security的 "認證箱"(SecurityContextHolder)
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
+            //該次請求過濾器結束生命週期-->將請求繼續往下傳遞...
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e){
+            System.out.println("你過期了");
+
         }
-        //該次請求過濾器結束生命週期-->將請求繼續往下傳遞...
-        filterChain.doFilter(request, response);
     }
     private List<? extends GrantedAuthority> getUserAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));

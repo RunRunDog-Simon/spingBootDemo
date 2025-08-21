@@ -5,6 +5,15 @@ import com.gtalent.demo.model.User;
 public class GetUserResponse {
     private int id;
     private String username;
+    private  String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public GetUserResponse(int id, String username) {
         this.id = id;
@@ -15,8 +24,9 @@ public class GetUserResponse {
     }
 
     public GetUserResponse(User user){
-    this.id = user.getId();
-    this.username = user.getUsername();
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.role = user.getRole();
     }
 
     public int getId() {

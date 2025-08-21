@@ -19,9 +19,13 @@ public class JwtService {
 
     private String buildToken(User user){
         return Jwts.builder()
+                //唯一的使用者
                 .setSubject(user.getUsername())
+                //發行時間
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 600000)) //10分鐘
+                //過期時間
+                .setExpiration(new Date(System.currentTimeMillis() + 6000000)) //10分鐘
+                //對jwt進行簽名
                 .signWith(getKey(), SignatureAlgorithm.HS256) //密碼加密
                 .compact(); //壓縮
     }
